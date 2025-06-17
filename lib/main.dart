@@ -1,3 +1,4 @@
+import 'package:eco_habbit/pages/dashboardScreen.dart';
 import 'package:eco_habbit/pages/splashScreen.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Splashscreen()
+        body: Dashboardscreen()
       ),
     );
   }

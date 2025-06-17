@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:eco_habbit/auth/loginScreen.dart';
+import 'package:eco_habbit/auth/registerScreen.dart';
 import 'package:eco_habbit/pages/dashboardScreen.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class _SplashscreenState extends State<Splashscreen> {
     super.initState();
     Timer(const Duration(milliseconds: 2200), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const Loginscreen()),
+        MaterialPageRoute(builder: (context) => const Registerscreen()),
       );
     });
   }
