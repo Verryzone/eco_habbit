@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
-class Registerscreen extends StatefulWidget {
-  const Registerscreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<Registerscreen> createState() => _RegisterscreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterscreenState extends State<Registerscreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
+    bool _agreeTerms = false;
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 36.0),
@@ -36,7 +38,11 @@ class _RegisterscreenState extends State<Registerscreen> {
               children: [
                 Text(
                   'Name',
-                  style: TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -56,7 +62,11 @@ class _RegisterscreenState extends State<Registerscreen> {
               children: [
                 Text(
                   'Email Address',
-                  style: TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -76,7 +86,11 @@ class _RegisterscreenState extends State<Registerscreen> {
               children: [
                 Text(
                   'Password',
-                  style: TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -105,10 +119,45 @@ class _RegisterscreenState extends State<Registerscreen> {
               obscureText: true,
             ),
             SizedBox(height: 20),
+            Row(
+              children: [
+                Checkbox(
+                  value: _agreeTerms,
+                  onChanged: (value) {
+                    setState(() {
+                      _agreeTerms = value ?? false;
+                    });
+                  },
+                ),
+                Expanded(
+                  child: Wrap(
+                    children: [
+                      const Text('I\'ve read and agree with the ', style: TextStyle(fontSize: 12),),
+                      Text(
+                        'Terms and Conditions',
+                        style: TextStyle(
+                          color: Color(0xFF54861C),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12
+                        ),
+                      ),
+                      const Text(' and the '),
+                      Text(
+                        'Privacy Policy.',
+                        style: TextStyle(
+                          color: Color(0xFF54861C),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-              },
-              child: Text('Register', style: TextStyle(color: Colors.white),),
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
@@ -116,22 +165,23 @@ class _RegisterscreenState extends State<Registerscreen> {
                 ),
                 backgroundColor: Color(0xFF54861C),
               ),
+              child: Text('Register', style: TextStyle(color: Colors.white)),
             ),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-              Text('Haved an account?', style: TextStyle(fontSize: 12)),
-              Text(
-                ' Login',
-                style: TextStyle(
-                color: Color(0xFF54861C),
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+                Text('Haved an account?', style: TextStyle(fontSize: 12)),
+                Text(
+                  ' Login',
+                  style: TextStyle(
+                    color: Color(0xFF54861C),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
               ],
-            )
+            ),
           ],
         ),
       ),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class Loginscreen extends StatefulWidget {
-  const Loginscreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<Loginscreen> createState() => _LoginscreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginscreenState extends State<Loginscreen> {
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,6 +16,8 @@ class _LoginscreenState extends State<Loginscreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset('assets/images/hutan.jpg', width: 137, height: 198),
+            // Image.asset('assets/images/logo.png', width: 137, height: 198),
             Row(
               children: [
                 Text(
@@ -65,7 +67,6 @@ class _LoginscreenState extends State<Loginscreen> {
             ElevatedButton(
               onPressed: () {
               },
-              child: Text('Login', style: TextStyle(color: Colors.white),),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
@@ -73,6 +74,7 @@ class _LoginscreenState extends State<Loginscreen> {
                 ),
                 backgroundColor: Color(0xFF54861C),
               ),
+              child: Text('Login', style: TextStyle(color: Colors.white),),
             ),
             SizedBox(height: 20),
             Row(
