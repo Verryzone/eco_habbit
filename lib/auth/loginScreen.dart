@@ -1,4 +1,6 @@
+import 'package:eco_habbit/pages/dashboardScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,12 +14,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 36.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Image.asset('assets/images/hutan.jpg', width: 137, height: 198),
-            // Image.asset('assets/images/logo.png', width: 137, height: 198),
+            Image.asset('assets/images/hutan.jpg', width: 1000, height: 250, fit: BoxFit.fitWidth,),
+            SizedBox(height: 15),
             Row(
               children: [
                 Text(
@@ -66,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                Get.to(() =>  DashboardScreen());
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),

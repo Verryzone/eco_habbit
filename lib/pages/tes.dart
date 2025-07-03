@@ -11,181 +11,106 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SignUpScreen(),
+      home: const HomeScreen(),
     );
   }
 }
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
-
-  @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
-  bool _agreeTerms = false;
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Sign up',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Create an account to get started',
-                  style: TextStyle(color: Colors.grey),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Name',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'Name',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.green),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.green),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Email Address',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'name@email.com',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Password',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    hintText: 'Create a password',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  obscureText: _obscureConfirm,
-                  decoration: InputDecoration(
-                    hintText: 'Confirm password',
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirm ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirm = !_obscureConfirm;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _agreeTerms,
-                      onChanged: (value) {
-                        setState(() {
-                          _agreeTerms = value ?? false;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: Wrap(
-                        children: [
-                          const Text('I\'ve read and agree with the '),
-                          Text(
-                            'Terms and Conditions',
-                            style: TextStyle(color: Colors.green.shade700, fontWeight: FontWeight.w600),
-                          ),
-                          const Text(' and the '),
-                          Text(
-                            'Privacy Policy.',
-                            style: TextStyle(color: Colors.green.shade700, fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green.shade700,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {
-                      // Submit logic here
-                    },
-                    child: const Text(
-                      'Create Account',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                )
-              ],
-            ),
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              _buildCard(),
+              const SizedBox(height: 12),
+              _buildCard(),
+            ],
           ),
         ),
+      ),
+      bottomNavigationBar: _buildBottomNavBar(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add action
+        },
+        backgroundColor: Colors.green.shade200,
+        child: const Icon(Icons.add, color: Colors.green),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _buildCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.green.shade100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Using botle',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 4),
+          Text(
+            'Reuse',
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+          SizedBox(height: 2),
+          Text(
+            '21-May-2025',
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNavBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: const BoxDecoration(
+        color: Color(0xFFF7F7F7),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(Icons.home),
+          _buildNavItem(Icons.history),
+          _buildNavItem(Icons.person),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData iconData) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.green.shade100,
+        shape: BoxShape.circle,
+      ),
+      padding: const EdgeInsets.all(8),
+      child: Icon(
+        iconData,
+        color: Colors.green.shade700,
       ),
     );
   }
