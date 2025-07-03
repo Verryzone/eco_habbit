@@ -10,7 +10,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
-    bool _agreeTerms = false;
+    bool agreeTerms = false;
 
     return Scaffold(
       body: Padding(
@@ -122,10 +122,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Row(
               children: [
                 Checkbox(
-                  value: _agreeTerms,
+                  value: agreeTerms,
                   onChanged: (value) {
                     setState(() {
-                      _agreeTerms = value ?? false;
+                      agreeTerms = value ?? false;
                     });
                   },
                 ),
