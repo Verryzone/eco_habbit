@@ -1,4 +1,4 @@
-package com.example.eco_habbit
+package com.verryzone.ecohabbit
 
 import io.flutter.embedding.android.FlutterActivity
 
