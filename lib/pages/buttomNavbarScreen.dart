@@ -1,4 +1,7 @@
+import 'package:eco_habbit/pages/analyticScreen.dart';
 import 'package:eco_habbit/pages/dashboardScreen.dart';
+import 'package:eco_habbit/pages/profileScreen.dart';
+import 'package:eco_habbit/widgets/add_modal.dart';
 import 'package:flutter/material.dart';
 
 class ButtonNavbarScreen extends StatefulWidget {
@@ -92,13 +95,14 @@ class ButtonNavbarScreen extends StatefulWidget {
 //   }
 // }
 
-class _ButtonNavbarScreenState extends State<ButtonNavbarScreen> with TickerProviderStateMixin {
+class _ButtonNavbarScreenState extends State<ButtonNavbarScreen>
+    with TickerProviderStateMixin {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
     DashboardScreen(),
-    Center(child: Text('History Page')),
-    Center(child: Text('Profile Page')),
+    AnalyticScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -126,10 +130,7 @@ class _ButtonNavbarScreenState extends State<ButtonNavbarScreen> with TickerProv
               opacity: animation,
               child: SlideTransition(
                 position: inAnimation,
-                child: ScaleTransition(
-                  scale: scaleAnim,
-                  child: child,
-                ),
+                child: ScaleTransition(scale: scaleAnim, child: child),
               ),
             );
           },
@@ -141,13 +142,25 @@ class _ButtonNavbarScreenState extends State<ButtonNavbarScreen> with TickerProv
         ),
       ),
       bottomNavigationBar: _buildBottomNavBar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add action
-        },
-        backgroundColor: Color(0xFFC2D9AB),
-        child: const Icon(Icons.add, color: Color(0xFF54861C)),
-      ),
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton(
+              onPressed: () {
+                // Add action
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  builder: (context) => const AddHabitModal(),
+                );
+              },
+              backgroundColor: Color(0xFFC2D9AB),
+              child: const Icon(Icons.add, color: Color(0xFF54861C)),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
@@ -190,7 +203,7 @@ class _ButtonNavbarScreenState extends State<ButtonNavbarScreen> with TickerProv
                     color: Color(0xFF54861C).withValues(alpha: 0.18),
                     blurRadius: 12,
                     offset: Offset(0, 4),
-                  )
+                  ),
                 ]
               : [],
         ),
