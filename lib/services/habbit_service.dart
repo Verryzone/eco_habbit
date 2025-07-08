@@ -55,6 +55,8 @@ class HabbitService {
         throw Exception('No authenticated user found');
       }
       
+      print('Fetching habits for user: ${user.id}'); // Debug log
+      
       // Add timeout for better user experience
       final response = await supabase
           .from('habbits')
@@ -63,8 +65,11 @@ class HabbitService {
           .order('created_at', ascending: false) // Sort by newest first
           .timeout(const Duration(seconds: 10));
       
+      print('Found ${response.length} habits for user ${user.id}'); // Debug log
+      
       return response.map((json) => HabbitModel.fromJson(json)).toList();
     } catch (e) {
+      print('Error fetching habits: $e'); // Debug log
       throw Exception('Gagal mengambil kebiasaan: $e');
     }
   }
@@ -88,6 +93,11 @@ class HabbitService {
 
   Future<void> updateHabit(String id, String name) async {
     try {
+      final user = supabase.auth.currentUser;
+      if (user == null) {
+        throw Exception('No authenticated user found');
+      }
+      
       final intId = int.tryParse(id);
       if (intId == null) {
         throw Exception('Invalid ID format: $id');
@@ -97,6 +107,7 @@ class HabbitService {
           .from('habbits')
           .update({'name': name})
           .eq('id', intId)
+          .eq('user_id', user.id) // Security: only update habits belonging to current user
           .timeout(const Duration(seconds: 10));
     } catch (e) {
       throw Exception('Gagal memperbarui kebiasaan: $e');
@@ -105,6 +116,11 @@ class HabbitService {
 
   Future<void> updateHabitWithCategory(String id, String name, int categoryId) async {
     try {
+      final user = supabase.auth.currentUser;
+      if (user == null) {
+        throw Exception('No authenticated user found');
+      }
+      
       final intId = int.tryParse(id);
       if (intId == null) {
         throw Exception('Invalid ID format: $id');
@@ -117,6 +133,7 @@ class HabbitService {
             'category_id': categoryId,
           })
           .eq('id', intId)
+          .eq('user_id', user.id) // Security: only update habits belonging to current user
           .timeout(const Duration(seconds: 10));
     } catch (e) {
       throw Exception('Gagal memperbarui kebiasaan: $e');

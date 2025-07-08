@@ -59,14 +59,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF54861C)),
                           strokeWidth: 3,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'Loading habits...',
                           style: TextStyle(
-                            color: Colors.green.shade700,
+                            color: Color(0xFF54861C),
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -113,7 +113,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                           
                           return RefreshIndicator(
                             onRefresh: () => _controller.refreshData(),
-                            color: Colors.green,
+                            color: Color(0xFFC2D9AB),
                             backgroundColor: Colors.white,
                             child: AnimatedSwitcher(
                               duration: const Duration(milliseconds: 300),
@@ -290,7 +290,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                         ElevatedButton(
                           onPressed: () => Navigator.pop(context, true),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: Color(0xFFC2D9AB),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -323,7 +323,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                                 Text('Habit "${habit.name}" deleted successfully'),
                               ],
                             ),
-                            backgroundColor: Colors.green,
+                            backgroundColor: Color(0xFFC2D9AB),
                             behavior: SnackBarBehavior.floating,
                             duration: Duration(seconds: 2),
                           ),

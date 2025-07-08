@@ -67,7 +67,7 @@ class _AnalyticScreenState extends State<AnalyticScreen> {
                             children: [
                               Icon(
                                 Icons.analytics_rounded,
-                                color: Colors.green.shade600,
+                                color: Color(0xFF54861C),
                                 size: 28,
                               ),
                               const SizedBox(width: 12),
@@ -76,7 +76,7 @@ class _AnalyticScreenState extends State<AnalyticScreen> {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green.shade700,
+                                  color: Color(0xFF54861C),
                                 ),
                               ),
                             ],
@@ -88,7 +88,7 @@ class _AnalyticScreenState extends State<AnalyticScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               CircularProgressIndicator(
-                                color: Colors.green.shade600,
+                                color: Color(0xFF54861C),
                                 strokeWidth: 3,
                               ),
                               const SizedBox(height: 16),
@@ -144,7 +144,7 @@ class _AnalyticScreenState extends State<AnalyticScreen> {
               // Generate colors dynamically based on data length
               final List<Color> colors = List.generate(data.length, (index) {
                 final baseColors = [
-                  Colors.green.shade400,
+                  Color(0xFF54861C),
                   Colors.blue.shade400,
                   Colors.orange.shade400,
                   Colors.purple.shade400,
@@ -201,7 +201,7 @@ class _AnalyticScreenState extends State<AnalyticScreen> {
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.green.shade700,
+                                color: Color(0xFF54861C),
                               ),
                             ),
                           ],

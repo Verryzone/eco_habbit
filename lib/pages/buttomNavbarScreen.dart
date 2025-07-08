@@ -2,6 +2,7 @@ import 'package:eco_habbit/pages/analyticScreen.dart';
 import 'package:eco_habbit/pages/dashboardScreen.dart';
 import 'package:eco_habbit/pages/profileScreen.dart';
 import 'package:eco_habbit/widgets/add_modal.dart';
+import 'package:eco_habbit/controllers/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 
 class ButtonNavbarScreen extends StatefulWidget {
@@ -104,6 +105,15 @@ class _ButtonNavbarScreenState extends State<ButtonNavbarScreen>
     AnalyticScreen(),
     ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Force refresh data when entering the main screen after login
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      DashboardController().refreshData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -3,6 +3,7 @@ import 'package:eco_habbit/models/habbit_model.dart';
 import 'package:eco_habbit/models/category_model.dart';
 import 'package:eco_habbit/services/habbit_service.dart';
 import 'package:eco_habbit/services/category_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DashboardController {
   static final DashboardController _instance = DashboardController._internal();
@@ -46,7 +47,16 @@ class DashboardController {
   String? get error => _error;
   bool get isInitialized => _isInitialized;
 
+  String? _currentUserId;
+
   Future<void> initialize() async {
+    // Check if we need to clear data for a different user
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    if (_currentUserId != null && _currentUserId != currentUserId) {
+      clearData();
+    }
+    _currentUserId = currentUserId;
+    
     if (_isInitialized && !_isLoading && _isCacheValid()) return;
     
     await _loadData();
@@ -88,6 +98,20 @@ class DashboardController {
 
   Future<void> refreshData() async {
     await _loadData();
+  }
+
+  // Method to clear all cached data when user changes
+  void clearData() {
+    _habits.clear();
+    _categoriesMap.clear();
+    _isInitialized = false;
+    _lastRefresh = null;
+    _currentUserId = null;
+    _setError(null);
+    
+    // Update streams with empty data
+    _habitsController.add(_habits);
+    _categoriesController.add(_categoriesMap);
   }
 
   void addHabit(HabbitModel habit) {
