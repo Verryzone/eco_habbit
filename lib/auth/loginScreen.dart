@@ -1,5 +1,6 @@
 import 'package:eco_habbit/auth/registerScreen.dart';
 import 'package:eco_habbit/pages/buttomNavbarScreen.dart';
+import 'package:eco_habbit/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,7 +12,21 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+
   @override
+  void initState() {
+    super.initState();
+
+    if (_authService.isLoggedIn()) {
+      Future.microtask(() {
+        Get.offAll(() => ButtonNavbarScreen());
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -37,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 15),
               TextField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(fontSize: 12, color: Colors.grey),
@@ -45,10 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: Color(0xFF54861C),
-                      width: 2, // Tambahkan ketebalan border
-                    ),
+                    borderSide: BorderSide(color: Color(0xFF54861C), width: 2),
                   ),
                   focusColor: Color(0xFF54861C),
                 ),
@@ -56,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
               TextField(
+                controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   labelStyle: TextStyle(fontSize: 12, color: Colors.grey),
@@ -91,12 +105,22 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  Get.to(
-                    () => ButtonNavbarScreen(),
-                    transition: Transition.fadeIn,
-                    duration: Duration(milliseconds: 400),
-                  );
+                onPressed: () async {
+                  try {
+                    await _authService.signIn(
+                      _emailController.text,
+                      _passwordController.text,
+                    );
+                    Get.to(
+                      () => ButtonNavbarScreen(),
+                      transition: Transition.fadeIn,
+                      duration: Duration(milliseconds: 400),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(e.toString())));
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, 50),

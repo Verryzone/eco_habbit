@@ -1,9 +1,13 @@
+import 'package:eco_habbit/auth/loginScreen.dart';
+import 'package:eco_habbit/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ProfileScreen extends StatelessWidget {
+  final AuthService _authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
-    // Warna utama profil
     final Color primaryColor = const Color(0xFF54861C);
 
     return Scaffold(
@@ -12,8 +16,24 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.power_settings_new),
-            onPressed: () {
-              // Logout logic
+            onPressed: () async {
+              try {
+                _authService.signOut();
+                Get.offAll(
+                  () => LoginScreen(),
+                  transition: Transition.fadeIn,
+                  duration: Duration(milliseconds: 400),
+                );
+              } catch (e) {
+                Get.snackbar(
+                  "Error",
+                  e.toString(),
+                  backgroundColor: Colors.redAccent,
+                  colorText: Colors.white,
+                  snackPosition: SnackPosition.TOP,
+                  margin: EdgeInsets.only(top: 4, right: 4, left: 4),
+                );
+              }
             },
           ),
         ],
@@ -28,11 +48,7 @@ class ProfileScreen extends StatelessWidget {
               CircleAvatar(
                 radius: 50,
                 backgroundColor: Color(0xFFC2D9AB),
-                child: Icon(
-                  Icons.person,
-                  size: 60,
-                  color: primaryColor,
-                ),
+                child: Icon(Icons.person, size: 60, color: primaryColor),
               ),
               CircleAvatar(
                 radius: 12,

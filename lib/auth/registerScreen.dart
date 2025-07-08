@@ -1,4 +1,8 @@
+import 'dart:js_interop';
+
 import 'package:eco_habbit/auth/loginScreen.dart';
+import 'package:eco_habbit/pages/buttomNavbarScreen.dart';
+import 'package:eco_habbit/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,6 +14,13 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final AuthService _authService = AuthService();
+
   bool agreeTerms = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -24,6 +35,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    if (_authService.isLoggedIn()) {
+      Future.microtask(() {
+        Get.offAll(() => ButtonNavbarScreen());
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -70,6 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(height: 5),
                 TextField(
                   cursorColor: primaryColor,
+                  controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Name',
                     labelStyle: TextStyle(fontSize: 12, color: Colors.grey),
@@ -97,6 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(height: 5),
                 TextField(
                   cursorColor: primaryColor,
+                  controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email Address',
                     labelStyle: TextStyle(fontSize: 12, color: Colors.grey),
@@ -124,6 +147,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(height: 5),
                 TextField(
                   cursorColor: primaryColor,
+                  controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     suffixIcon: IconButton(
@@ -152,6 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(height: 20),
                 TextField(
                   cursorColor: primaryColor,
+                  controller: _confirmPasswordController,
                   decoration: InputDecoration(
                     labelText: 'Confirm Password',
                     suffixIcon: IconButton(
@@ -228,7 +253,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      if (_passwordController.text ==
+                          _confirmPasswordController.text) {
+                        try {
+                          await _authService.signUp(
+                            _nameController.text,
+                            _emailController.text,
+                            _passwordController.text,
+                          );
+
+                          Get.to(
+                            () => ButtonNavbarScreen(),
+                            transition: Transition.fadeIn,
+                            duration: Duration(milliseconds: 400),
+                          );
+                        } catch (e) {
+                          Get.snackbar(
+                            "Error",
+                            e.toString(),
+                            backgroundColor: Colors.redAccent,
+                            colorText: Colors.white,
+                            snackPosition: SnackPosition.TOP,
+                            margin: EdgeInsets.only(top: 4, right: 4, left: 4),
+                          );
+                        }
+                      } else {
+                        Get.snackbar(
+                          "Warning",
+                          "Password doesn't match!",
+                          backgroundColor: Colors.redAccent,
+                          colorText: Colors.white,
+                          snackPosition: SnackPosition.TOP,
+                          margin: EdgeInsets.only(top: 4, right: 4, left: 4),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
