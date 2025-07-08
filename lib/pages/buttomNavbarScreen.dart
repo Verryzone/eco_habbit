@@ -149,7 +149,8 @@ class _ButtonNavbarScreenState extends State<ButtonNavbarScreen>
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
-                  shape: RoundedRectangleBorder(
+                  backgroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(20),
                     ),
