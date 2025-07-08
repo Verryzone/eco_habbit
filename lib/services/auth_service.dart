@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:eco_habbit/controllers/dashboard_controller.dart';
+import 'package:eco_habbit/controllers/profile_controller.dart';
 
 class AuthService {
   final SupabaseClient supabase = Supabase.instance.client;
@@ -46,6 +47,7 @@ class AuthService {
     try {
       // Clear data before signing out
       DashboardController().clearData();
+      ProfileController().clearProfile();
       
       await supabase.auth.signOut();
     } catch (e) {
