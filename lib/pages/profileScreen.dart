@@ -44,15 +44,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (image != null) {
         final Uint8List imageBytes = await image.readAsBytes();
-        
+
         // Show loading indicator
         print('Starting image upload...'); // Debug log
-        
+
         // Upload and update profile image
         await _profileController.updateProfileImage(imageBytes, image.name);
-        
+
         print('Image upload completed'); // Debug log
-        
+
         // Force multiple UI rebuilds to ensure refresh
         if (mounted) {
           setState(() {});
@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             setState(() {});
           }
         }
-        
+
         Get.snackbar(
           "Success",
           "Profile image updated successfully!",
@@ -88,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _editUsername(ProfileModel profile) async {
     _usernameController.text = profile.username;
-    
+
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -97,9 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           controller: _usernameController,
           decoration: InputDecoration(
             labelText: 'Username',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: Colors.green.shade600, width: 2),
@@ -138,6 +136,137 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _showLogoutConfirmation() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.logout, color: Colors.redAccent, size: 24),
+            const SizedBox(width: 12),
+            const Text(
+              'Logout Konfirmasi',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: const Text(
+          'Apakah Anda yakin ingin keluar dari aplikasi?',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              'Batal',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Logout',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      await _performLogout();
+    }
+  }
+
+  Future<void> _performLogout() async {
+    try {
+      // Show loading indicator
+      Get.dialog(
+        Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    color: const Color(0xFF54861C),
+                    strokeWidth: 3,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Logging out...',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: const Color(0xFF54861C),
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
+      // Clear profile cache
+      _profileController.clearProfile();
+
+      // Sign out from auth service
+      await _authService.signOut();
+
+      // Close loading dialog
+      Get.back();
+
+      // Navigate to login screen
+      Get.offAll(
+        () => const LoginScreen(),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    } catch (e) {
+      // Close loading dialog if it's open
+      if (Get.isDialogOpen ?? false) {
+        Get.back();
+      }
+
+      Get.snackbar(
+        "Error",
+        "Failed to logout: ${e.toString()}",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.only(top: 4, right: 4, left: 4),
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Color primaryColor = const Color(0xFF54861C);
@@ -152,25 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.power_settings_new, color: primaryColor),
-            onPressed: () async {
-              try {
-                await _authService.signOut();
-                Get.offAll(
-                  () => const LoginScreen(),
-                  transition: Transition.fadeIn,
-                  duration: const Duration(milliseconds: 400),
-                );
-              } catch (e) {
-                Get.snackbar(
-                  "Error",
-                  e.toString(),
-                  backgroundColor: Colors.redAccent,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.TOP,
-                  margin: const EdgeInsets.only(top: 4, right: 4, left: 4),
-                );
-              }
-            },
+            onPressed: () => _showLogoutConfirmation(),
           ),
         ],
       ),
@@ -211,40 +322,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           shape: BoxShape.circle,
                                           color: lightGreen,
                                           border: Border.all(
-                                            color: primaryColor.withOpacity(0.2),
+                                            color: primaryColor.withOpacity(
+                                              0.2,
+                                            ),
                                             width: 3,
                                           ),
-                                        ),                        child: profile?.imageUrl != null
-                            ? ClipOval(
-                                child: Image.network(
-                                  '${profile!.imageUrl!}?t=${DateTime.now().millisecondsSinceEpoch}', // Cache busting with timestamp
-                                  key: ValueKey('profile_image_${profile.imageUrl}_${DateTime.now().millisecondsSinceEpoch}'), // Unique key for rebuild
-                                  width: 104,
-                                  height: 104,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder: (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        color: primaryColor,
-                                        strokeWidth: 2,
-                                      ),
-                                    );
-                                  },
-                                  errorBuilder: (context, error, stackTrace) {
-                                    print('Image load error: $error'); // Debug log
-                                    return Icon(
-                                      Icons.person,
-                                      size: 60,
-                                      color: primaryColor,
-                                    );
-                                  },
-                                ),
-                              )
+                                        ),
+                                        child: profile?.imageUrl != null
+                                            ? ClipOval(
+                                                child: Image.network(
+                                                  '${profile!.imageUrl!}?t=${DateTime.now().millisecondsSinceEpoch}', // Cache busting with timestamp
+                                                  key: ValueKey(
+                                                    'profile_image_${profile.imageUrl}_${DateTime.now().millisecondsSinceEpoch}',
+                                                  ), // Unique key for rebuild
+                                                  width: 104,
+                                                  height: 104,
+                                                  fit: BoxFit.cover,
+                                                  loadingBuilder:
+                                                      (
+                                                        context,
+                                                        child,
+                                                        loadingProgress,
+                                                      ) {
+                                                        if (loadingProgress ==
+                                                            null)
+                                                          return child;
+                                                        return Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                                color:
+                                                                    primaryColor,
+                                                                strokeWidth: 2,
+                                                              ),
+                                                        );
+                                                      },
+                                                  errorBuilder:
+                                                      (
+                                                        context,
+                                                        error,
+                                                        stackTrace,
+                                                      ) {
+                                                        print(
+                                                          'Image load error: $error',
+                                                        ); // Debug log
+                                                        return Icon(
+                                                          Icons.person,
+                                                          size: 60,
+                                                          color: primaryColor,
+                                                        );
+                                                      },
+                                                ),
+                                              )
                                             : Icon(
-                                                Icons.person, 
-                                                size: 60, 
-                                                color: primaryColor
+                                                Icons.person,
+                                                size: 60,
+                                                color: primaryColor,
                                               ),
                                       ),
                                       // Loading overlay for upload
@@ -254,7 +386,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           height: 104,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            color: Colors.black.withOpacity(0.5),
+                                            color: Colors.black.withOpacity(
+                                              0.5,
+                                            ),
                                           ),
                                           child: const Center(
                                             child: CircularProgressIndicator(
@@ -273,7 +407,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   decoration: BoxDecoration(
                                     color: primaryColor,
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 2),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
                                   ),
                                   child: const Icon(
                                     Icons.camera_alt,
@@ -286,15 +423,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             const SizedBox(height: 16),
                             // Name with edit functionality
                             GestureDetector(
-                              onTap: profile != null && !isLoading 
+                              onTap: profile != null && !isLoading
                                   ? () => _editUsername(profile)
                                   : null,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: primaryColor.withOpacity(0.2)),
+                                  border: Border.all(
+                                    color: primaryColor.withOpacity(0.2),
+                                  ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -302,7 +444,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Text(
                                       profile?.username ?? "Loading...",
                                       style: TextStyle(
-                                        fontSize: 18, 
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                         color: primaryColor,
                                       ),
@@ -416,9 +558,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     // Bottom spacing
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 30),
-                    ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 30)),
                   ],
                 );
               },
@@ -430,7 +570,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // Widget helper for menu items with icon and color
-  Widget _buildMenuTile(String title, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildMenuTile(
+    String title,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -447,11 +592,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 24,
-                ),
+                child: Icon(icon, color: color, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -464,11 +605,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: Colors.grey[400],
-              ),
+              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
             ],
           ),
         ),
