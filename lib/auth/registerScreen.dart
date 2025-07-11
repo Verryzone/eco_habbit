@@ -1,6 +1,3 @@
-import 'dart:js_interop';
-
-import 'package:eco_habbit/auth/loginScreen.dart';
 import 'package:eco_habbit/pages/buttomNavbarScreen.dart';
 import 'package:eco_habbit/services/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +21,99 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool agreeTerms = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   final Color primaryColor = const Color(0xFF54861C);
+
+  void _setLoading(bool loading) {
+    setState(() {
+      _isLoading = loading;
+    });
+  }
+
+  Future<void> _handleRegister() async {
+    // Validation
+    if (_nameController.text.trim().isEmpty ||
+        _emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty ||
+        _confirmPasswordController.text.trim().isEmpty) {
+      Get.snackbar(
+        "Warning",
+        "Please fill all fields",
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.only(top: 4, right: 4, left: 4),
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+
+    if (!agreeTerms) {
+      Get.snackbar(
+        "Warning",
+        "Please agree to Terms and Conditions",
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.only(top: 4, right: 4, left: 4),
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      Get.snackbar(
+        "Warning",
+        "Password doesn't match!",
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.only(top: 4, right: 4, left: 4),
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+
+    _setLoading(true);
+
+    try {
+      await _authService.signUp(
+        _nameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      Get.snackbar(
+        "Success",
+        "Account created successfully!",
+        backgroundColor: primaryColor,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.only(top: 4, right: 4, left: 4),
+        duration: const Duration(seconds: 2),
+      );
+
+      // Navigate to main screen
+      Get.offAll(
+        () => ButtonNavbarScreen(),
+        transition: Transition.fadeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        margin: const EdgeInsets.only(top: 4, right: 4, left: 4),
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      _setLoading(false);
+    }
+  }
 
   OutlineInputBorder _inputBorder(Color color) {
     return OutlineInputBorder(
@@ -90,6 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 5),
                 TextField(
+                  enabled: !_isLoading,
                   cursorColor: primaryColor,
                   controller: _nameController,
                   decoration: InputDecoration(
@@ -118,6 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 5),
                 TextField(
+                  enabled: !_isLoading,
                   cursorColor: primaryColor,
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -146,6 +236,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 5),
                 TextField(
+                  enabled: !_isLoading,
                   cursorColor: primaryColor,
                   controller: _passwordController,
                   decoration: InputDecoration(
@@ -157,7 +248,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             : Icons.visibility,
                         color: Colors.grey,
                       ),
-                      onPressed: () {
+                      onPressed: _isLoading ? null : () {
                         setState(() {
                           _obscurePassword = !_obscurePassword;
                         });
@@ -175,6 +266,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 20),
                 TextField(
+                  enabled: !_isLoading,
                   cursorColor: primaryColor,
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(
@@ -186,7 +278,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             : Icons.visibility,
                         color: Colors.grey,
                       ),
-                      onPressed: () {
+                      onPressed: _isLoading ? null : () {
                         setState(() {
                           _obscureConfirmPassword = !_obscureConfirmPassword;
                         });
@@ -209,7 +301,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Checkbox(
                       value: agreeTerms,
                       activeColor: primaryColor,
-                      onChanged: (value) {
+                      onChanged: _isLoading ? null : (value) {
                         setState(() {
                           agreeTerms = value ?? false;
                         });
@@ -253,72 +345,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () async {
-                      if (_passwordController.text ==
-                          _confirmPasswordController.text) {
-                        try {
-                          await _authService.signUp(
-                            _nameController.text,
-                            _emailController.text,
-                            _passwordController.text,
-                          );
-
-                          Get.to(
-                            () => ButtonNavbarScreen(),
-                            transition: Transition.fadeIn,
-                            duration: Duration(milliseconds: 400),
-                          );
-                        } catch (e) {
-                          Get.snackbar(
-                            "Error",
-                            e.toString(),
-                            backgroundColor: Colors.redAccent,
-                            colorText: Colors.white,
-                            snackPosition: SnackPosition.TOP,
-                            margin: EdgeInsets.only(top: 4, right: 4, left: 4),
-                          );
-                        }
-                      } else {
-                        Get.snackbar(
-                          "Warning",
-                          "Password doesn't match!",
-                          backgroundColor: Colors.redAccent,
-                          colorText: Colors.white,
-                          snackPosition: SnackPosition.TOP,
-                          margin: EdgeInsets.only(top: 4, right: 4, left: 4),
-                        );
-                      }
-                    },
+                    onPressed: _isLoading ? null : _handleRegister,
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       backgroundColor: primaryColor,
+                      disabledBackgroundColor: primaryColor.withOpacity(0.6),
                     ),
-                    child: Text(
-                      'Register',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: _isLoading
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Creating Account...',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          )
+                        : const Text(
+                            'Register',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                   ),
                 ),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Haved an account?', style: TextStyle(fontSize: 12)),
+                    const Text(
+                      'Already have an account?',
+                      style: TextStyle(fontSize: 12),
+                    ),
                     GestureDetector(
-                      onTap: () {
-                        // Get.to(
-                        //   () => LoginScreen(),
-                        //   transition: Transition.circularReveal,
-                        //   duration: Duration(milliseconds: 2000),
-                        // );
+                      onTap: _isLoading ? null : () {
                         Get.back();
                       },
                       child: Text(
                         ' Login',
                         style: TextStyle(
-                          color: primaryColor,
+                          color: _isLoading ? Colors.grey : primaryColor,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
