@@ -7,11 +7,33 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env');
-  await Supabase.initialize(
-    url: AppEnv.supabaseUrl,
-    anonKey: AppEnv.supabaseAnonKey,
-  );
+  
+  try {
+    // Load environment variables
+    await dotenv.load(fileName: '.env');
+    print('Environment loaded successfully');
+    
+    // Initialize Supabase with proper configuration
+    await Supabase.initialize(
+      url: AppEnv.supabaseUrl,
+      anonKey: AppEnv.supabaseAnonKey,
+      debug: true, // Enable debug mode
+    ).timeout(
+      const Duration(seconds: 45), // Overall timeout for initialization
+      onTimeout: () {
+        print('Supabase initialization timed out');
+        throw Exception('Supabase initialization timeout');
+      },
+    );
+    
+    print('Supabase initialized successfully');
+    print('Supabase URL: ${AppEnv.supabaseUrl}');
+    
+  } catch (e) {
+    print('Error in main initialization: $e');
+    // App will still run but with limited functionality
+  }
+  
   runApp(MainApp());
 }
 
